@@ -3,6 +3,5 @@ A user who gets the sticky status can't do more than sitting in one special chan
 
 (This script is a port to MuMo of https://github.com/Natenom/murmur-sticky)
 
-* [Documentation in English](https://wiki.natenom.com/w/Mumble_Moderator/Sticky-Contextmenu)
+* [Documentation in English](https://wiki.natenom.de/en/mumble/tools/mumo/module/sticky-contextmenu)
 * [Documentation in German](https://wiki.natenom.de/mumble/tools/mumo/module/sticky-contextmenu)
-
