@@ -1,4 +1,4 @@
-Module for [Mumble Moderator (MuMo)](https://wiki.natenom.com/w/Mumble_Moderator) which adds a suffix to mobile users names.
+Module for [Mumble Moderator (MuMo)](https://wiki.natenom.de/en/mumble/tools/mumo) which adds a suffix to mobile users names.
 
 # Documentation
 * Documentation (English): https://wiki.natenom.de/en/mumble/tools/mumo/module/mumo-os-suffixes
