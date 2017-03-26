@@ -49,13 +49,15 @@ class setstatus(MumoModule):
     default_config = {'setstatus':(
                                 ('servers', commaSeperatedIntegers, []),
                                 ),
-                                lambda x: re.match('(all)|(server_\d+)', x):(                                
-                                ('setstatus', str, '!ss'),
-                                ('delstatus', str, '!ds'),
+                                lambda x: re.match('(all)|(server_\d+)', x):(
+                                ('setstatus', str, '!sets'),
+                                ('delstatus', str, '!dels'),
+				('prefix', str, '['),
+				('suffix', str, ']'),
 				('length', int, 20)
                                 )
                     }
-    
+
     def __init__(self, name, manager, configuration = None):
         MumoModule.__init__(self, name, manager, configuration)
         self.murmur = manager.getMurmurModule()
@@ -64,39 +66,47 @@ class setstatus(MumoModule):
         manager = self.manager()
         log = self.log()
         log.debug("Register for Server callbacks")
-    
+
         servers = self.cfg().setstatus.servers
         if not servers:
             servers = manager.SERVERS_ALL
-    
+
         manager.subscribeServerCallbacks(self, servers)
 
     def disconnected(self): pass
-    
-    def getuserorigname(self, username):
-        p=re.compile('^[^\[]+') #findet alles bis zur ersten [ Klammer  
-        return p.findall(username)[0].strip() #Leerzeichen am Anfang/Ende entfernen
+
+    def getUserOriginalName(self, server, username):
+	try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
+
+	pos = username.find(scfg.prefix)
+	if pos == -1:
+          return username
+        else:
+          return username[0:pos].strip()
 
     #--- Server callback functions
-    # 
+    #
 
     def userTextMessage(self, server, user, message, current=None):
         try:
             scfg = getattr(self.cfg(), 'server_%d' % server.id())
         except AttributeError:
             scfg = self.cfg().all
-      
+
         #Only allow registered Users to set a status
         if user.userid > 0:
             if message.text.startswith(scfg.setstatus):
-                statuscode=message.text[len(scfg.setstatus):].strip()   
+                statuscode = message.text[len(scfg.setstatus):].strip()
 		userstate=server.getState(int(user.session))
-		userstate.name="%s [%s]"  % (self.getuserorigname(userstate.name), statuscode[:scfg.length])
+		userstate.name = "%s %s%s%s" % (self.getUserOriginalName(server, userstate.name), scfg.prefix, statuscode[:scfg.length], scfg.suffix)
 		server.setState(userstate)
 
             if message.text.startswith(scfg.delstatus):
-		userstate=server.getState(int(user.session))
-		userstate.name=self.getuserorigname(userstate.name)
+		userstate = server.getState(int(user.session))
+		userstate.name=self.getUserOriginalName(server, userstate.name)
 		server.setState(userstate)
 
     def userConnected(self, server, state, context = None): pass
@@ -104,4 +114,4 @@ class setstatus(MumoModule):
     def userStateChanged(self, server, state, context = None): pass
     def channelCreated(self, server, state, context = None): pass
     def channelRemoved(self, server, state, context = None): pass
-    def channelStateChanged(self, server, state, context = None): pass     
+    def channelStateChanged(self, server, state, context = None): pass
