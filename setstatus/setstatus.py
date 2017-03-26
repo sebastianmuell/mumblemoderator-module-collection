@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 #
 # Copyright (C) 2011 Stefan Hacker <dd0t@users.sourceforge.net>
-# Copyright (C) 2012 Natenom <natenom@googlemail.com>
+# Copyright (C) 2012 – 2017 Natenom <natenom@googlemail.com>
 # All rights reserved.
 #
 # setstatus is based on the script seen.py
