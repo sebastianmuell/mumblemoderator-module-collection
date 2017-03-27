@@ -44,6 +44,7 @@ class registerusers(MumoModule):
                         lambda x: re.match('(all)|(server_\d+)', x):(
                         ('canregister', commaSeperatedStrings, ["admin", "moderator"]),
                         ('msg_success', str, "<font style='color:green;font-weight:bold;'>User was registered. Though he needs to reconnect now."),
+                        ('msg_success_target', str, "<font style='color:green;font-weight:bold;'>You are registered now. Though you need to reconnect to get your registration icon."),
                         ('msg_error', str, "<font style='color:red;font-weight:bold;'>Something did not work, tell your admin :)</font>"),
                         ('msg_no_certifcate', str, "<font style='color:red;font-weight:bold;'>Cannot register the user because he does not provide a certificate.</font>"),
                         ('msg_already_registered', str, "<font style='color:red;font-weight:bold;'>This user is already registered, idiot :)</font>"),
@@ -90,6 +91,7 @@ class registerusers(MumoModule):
             try:
                 server.registerUser(userInfomap)
                 server.sendMessage(user.session, scfg.msg_success)
+                server.sendMessage(target.session, scfg.msg_success_target)
             except:
                 server.sendMessage(user.session, scfg.msg_error)
 
