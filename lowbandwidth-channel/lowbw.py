@@ -184,12 +184,23 @@ class lowbw(MumoModule):
         S = self.murmur.PermissionSpeak # Speak
 
         server.setACL(newLowbwChannelID,
-                          [ACL(applyHere = True, # Deny speak for botgroup in the lowbw channel.
+                          [ACL(applyHere = True, # Allow speak for @all in the lowbw channel.
+                               applySubs = False,
+                               userid = -1,
+                               group = "all",
+                               allow = S),
+                           ACL(applyHere = True, # Allow speak for out group in the lowbw channel.
+                               applySubs = False,
+                               userid = -1,
+                               group = "out",
+                               allow = S),
+                           ACL(applyHere = True, # Deny speak for botgroup in the lowbw channel.
                                applySubs = False,
                                userid = -1,
                                group = scfg.botgroup,
                                deny = S)],
                            [], True)
+
         # End of code from hacst, thanks much :)
 
     def tidyup(self):
