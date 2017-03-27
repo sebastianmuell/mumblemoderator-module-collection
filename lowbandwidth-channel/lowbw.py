@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
 #
-# Copyright (C) 2016 Natenom <natenom@googlemail.com>
+# Copyright (C) 2016 – 2017 Natenom <natenom@googlemail.com>
 # Copyright (C) 2013 Stefan Hacker <dd0t@users.sourceforge.net>
 # All rights reserved.
 #

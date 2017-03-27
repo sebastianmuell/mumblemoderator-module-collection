@@ -40,21 +40,21 @@
 #
 
 from mumo_module import (commaSeperatedIntegers,
-			 commaSeperatedBool,
+                         commaSeperatedBool,
                          MumoModule)
 import pickle
 import re
 
 class setstatus(MumoModule):
     default_config = {'setstatus':(
-                                ('servers', commaSeperatedIntegers, []),
-                                ),
-                                lambda x: re.match('(all)|(server_\d+)', x):(
+                        ('servers', commaSeperatedIntegers, []),
+                                  ),
+                        lambda x: re.match('(all)|(server_\d+)', x):(
                                 ('setstatus', str, '!sets'),
                                 ('delstatus', str, '!dels'),
-				('prefix', str, '['),
-				('suffix', str, ']'),
-				('length', int, 20)
+                                ('prefix', str, '['),
+                                ('suffix', str, ']'),
+                                ('length', int, 20)
                                 )
                     }
 
@@ -76,13 +76,13 @@ class setstatus(MumoModule):
     def disconnected(self): pass
 
     def getUserOriginalName(self, server, username):
-	try:
+        try:
             scfg = getattr(self.cfg(), 'server_%d' % server.id())
         except AttributeError:
             scfg = self.cfg().all
 
-	pos = username.find(scfg.prefix)
-	if pos == -1:
+        pos = username.find(scfg.prefix)
+        if pos == -1:
           return username
         else:
           return username[0:pos].strip()
@@ -100,14 +100,14 @@ class setstatus(MumoModule):
         if user.userid > 0:
             if message.text.startswith(scfg.setstatus):
                 statuscode = message.text[len(scfg.setstatus):].strip()
-		userstate=server.getState(int(user.session))
-		userstate.name = "%s %s%s%s" % (self.getUserOriginalName(server, userstate.name), scfg.prefix, statuscode[:scfg.length], scfg.suffix)
-		server.setState(userstate)
+                userstate=server.getState(int(user.session))
+                userstate.name = "%s %s%s%s" % (self.getUserOriginalName(server, userstate.name), scfg.prefix, statuscode[:scfg.length], scfg.suffix)
+                server.setState(userstate)
 
             if message.text.startswith(scfg.delstatus):
-		userstate = server.getState(int(user.session))
-		userstate.name=self.getUserOriginalName(server, userstate.name)
-		server.setState(userstate)
+                userstate = server.getState(int(user.session))
+                userstate.name=self.getUserOriginalName(server, userstate.name)
+                server.setState(userstate)
 
     def userConnected(self, server, state, context = None): pass
     def userDisconnected(self, server, state, context = None): pass

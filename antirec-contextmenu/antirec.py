@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 
 # Copyright (C) 2011 Stefan Hacker <dd0t@users.sourceforge.net>
-# Copyright (C) 2015 Natenom <natenom@googlemail.com>
+# Copyright (C) 2015 – 2017 Natenom <natenom@googlemail.com>
 # All rights reserved.
 #
 # Antirec is based on the scripts onjoin.py, idlemove.py and seen.py
@@ -35,31 +35,31 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from mumo_module import (commaSeperatedIntegers,
-				commaSeperatedBool,
-			 	MumoModule)
+                                commaSeperatedBool,
+                                MumoModule)
 import re
 
 class antirec(MumoModule):
     default_config = {'antirec':(
-				('servers', commaSeperatedIntegers, []),
-				),
-				lambda x: re.match('(all)|(server_\d+)', x):(
-				('cantallowself', str, 'You can\'t allow yourself to record.'),
-				('userremovedfromallowed', str, 'User %s has been removed from list.'),
-				('userwasnotallowed', str, 'User %s was not on list, can\'t remove.'),
-				('usergotpermission', str, 'User %s got permission from %s to record.'),
-				('canallowrecording', str, 'allowrecord'),
-				('punishment', str, 'DEAF'),
-				('adminallowself', commaSeperatedBool, [False]),
-				('deafmessage', str, 'Recording not allowed. Stop it to get undeafened :)'),
-				('kickmessage', str, 'Recording not allowed.'),
-				('allowedchannels', str, '1')
-				)
-		    }
+                                ('servers', commaSeperatedIntegers, []),
+                                ),
+                                lambda x: re.match('(all)|(server_\d+)', x):(
+                                ('cantallowself', str, 'You can\'t allow yourself to record.'),
+                                ('userremovedfromallowed', str, 'User %s has been removed from list.'),
+                                ('userwasnotallowed', str, 'User %s was not on list, can\'t remove.'),
+                                ('usergotpermission', str, 'User %s got permission from %s to record.'),
+                                ('canallowrecording', str, 'allowrecord'),
+                                ('punishment', str, 'DEAF'),
+                                ('adminallowself', commaSeperatedBool, [False]),
+                                ('deafmessage', str, 'Recording not allowed. Stop it to get undeafened :)'),
+                                ('kickmessage', str, 'Recording not allowed.'),
+                                ('allowedchannels', str, '1')
+                                )
+                    }
 
     def __init__(self, name, manager, configuration = None):
-	MumoModule.__init__(self, name, manager, configuration)
-	self.murmur = manager.getMurmurModule()
+        MumoModule.__init__(self, name, manager, configuration)
+        self.murmur = manager.getMurmurModule()
         self.action_allow_recording = manager.getUniqueAction()
         self.action_disallow_recording = manager.getUniqueAction()
         self.action_list_allowed = manager.getUniqueAction()
@@ -69,18 +69,18 @@ class antirec(MumoModule):
 
 
     def connected(self):
-	manager = self.manager()
-	log = self.log()
-	log.debug("Register for Server callbacks")
+        manager = self.manager()
+        log = self.log()
+        log.debug("Register for Server callbacks")
 
-	servers = self.cfg().antirec.servers
-	if not servers:
-	    servers = manager.SERVERS_ALL
+        servers = self.cfg().antirec.servers
+        if not servers:
+            servers = manager.SERVERS_ALL
 
-	manager.subscribeServerCallbacks(self, servers)
+        manager.subscribeServerCallbacks(self, servers)
 
-	# Craft the array for all virtual servers. Should also work for server later started servers.
-	meta = manager.getMeta()
+        # Craft the array for all virtual servers. Should also work for server later started servers.
+        meta = manager.getMeta()
         servers = meta.getAllServers()
 
         for virtualserver in servers:
@@ -91,9 +91,9 @@ class antirec(MumoModule):
 
     def __on_list_allowed(self, server, action, user, target):
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         assert action == self.action_list_allowed
 
@@ -115,9 +115,9 @@ class antirec(MumoModule):
 
     def __on_allow_recording(self, server, action, user, target):
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         assert action == self.action_allow_recording
         self.log().info(user.name + " allowed recording for " + target.name)
@@ -134,9 +134,9 @@ class antirec(MumoModule):
 
     def __on_disallow_recording(self, server, action, user, target):
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         assert action == self.action_disallow_recording
         self.log().info(user.name + " disallowed recording for " + target.name)
@@ -158,16 +158,16 @@ class antirec(MumoModule):
     def userTextMessage(self, server, user, message, current=None): pass
 
     def userConnected(self, server, user, context = None):
-	# Adding the entries here means if mumo starts up after users
+        # Adding the entries here means if mumo starts up after users
         # already connected they won't have the new entries before they
         # reconnect. You can also use the "connected" callback to
         # add the entries to already connected user. For simplicity
         # this is not done here.
 
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         manager = self.manager()
 
@@ -209,40 +209,39 @@ class antirec(MumoModule):
                 break
 
     def userDisconnected(self, server, state, context = None):
-	if str(state.session) in self.allowedusers[server.id()]:
-	    del self.allowedusers[server.id()][str(state.session)]
-	    self.log().debug("Session %s removed from allowedusers, %s disconnected" % (state.session, state.name))
+        if str(state.session) in self.allowedusers[server.id()]:
+            del self.allowedusers[server.id()][str(state.session)]
+            self.log().debug("Session %s removed from allowedusers, %s disconnected" % (state.session, state.name))
 
     def userStateChanged(self, server, state, context = None):
-	"""Wer aufnimmt, wird stumm-taub gestellt."""
-	try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+        """Wer aufnimmt, wird stumm-taub gestellt."""
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
-	allowedchannels_list=scfg.allowedchannels.split()
-	if str(state.channel) in allowedchannels_list: #recording in these channels is allowed
-		return
+        allowedchannels_list=scfg.allowedchannels.split()
+        if str(state.channel) in allowedchannels_list: #recording in these channels is allowed
+            return
 
-	if (state.recording==True) and (state.deaf==False):
-	    self.list_state_before_recording[state.session]=state.deaf
-	    if not (str(state.session) in self.allowedusers[server.id()]):
-		if (scfg.punishment=="DEAF"):
-		    state.deaf=True
-		    server.setState(state)
+        if (state.recording==True) and (state.deaf==False):
+            self.list_state_before_recording[state.session]=state.deaf
+            if not (str(state.session) in self.allowedusers[server.id()]):
+                if (scfg.punishment=="DEAF"):
+                    state.deaf=True
+                    server.setState(state)
 
-		    server.sendMessageChannel(state.channel, False, scfg.deafmessage % (state.name))
-		elif (scfg.punishment=="KICK"):
-		    server.kickUser(state.session, scfg.kickmessage)
+                    server.sendMessageChannel(state.channel, False, scfg.deafmessage % (state.name))
+                elif (scfg.punishment=="KICK"):
+                    server.kickUser(state.session, scfg.kickmessage)
 
-	#Wenn Benutzer in der Liste drin ist, hat er irgendwann aufgenommen; wenn er jetzt nicht mehr aufnimmt, bekommt er den deaf-Status von vor der Aufnahme :)
-	if (state.recording==False) and (state.session in self.list_state_before_recording):
-	    state.deaf = self.list_state_before_recording[state.session]
-	    state.mute = self.list_state_before_recording[state.session]
-	    server.setState(state)
+        #Wenn Benutzer in der Liste drin ist, hat er irgendwann aufgenommen; wenn er jetzt nicht mehr aufnimmt, bekommt er den deaf-Status von vor der Aufnahme :)
+        if (state.recording==False) and (state.session in self.list_state_before_recording):
+            state.deaf = self.list_state_before_recording[state.session]
+            state.mute = self.list_state_before_recording[state.session]
+            server.setState(state)
 
-	    del self.list_state_before_recording[state.session]
-
+            del self.list_state_before_recording[state.session]
 
     def channelCreated(self, server, state, context = None): pass
     def channelRemoved(self, server, state, context = None): pass

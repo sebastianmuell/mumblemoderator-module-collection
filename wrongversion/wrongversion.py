@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 
 # Copyright (C) 2010-2011 Stefan Hacker <dd0t@users.sourceforge.net>
-# Copyright (C) 2015-2016 Natenom <natenom@googlemail.com>
+# Copyright (C) 2015 – 2017 Natenom <natenom@googlemail.com>
 # Copyright (C) 2016 Nascher <kevin@nascher.org>
 # All rights reserved.
 #

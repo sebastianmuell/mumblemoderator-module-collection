@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 #
 # Copyright (C) 2011 Stefan Hacker <dd0t@users.sourceforge.net>
-# Copyright (C) 2013 - 2016 Natenom <natenom@googlemail.com>
+# Copyright (C) 2013 - 2017 Natenom <natenom@googlemail.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -98,10 +98,10 @@ class forwarder(MumoModule):
 
         if message.trees or message.sessions: #Ignore tree and private messages
             return
-          
+
         regex_bot_message = re.compile(scfg.messageforbotfilter)
         # For users, who want to command a music bot. Example: .queue or .volume 60
-        
+
         if scfg.messageforbotfilter and regex_bot_message.match(message.text):
             return
 

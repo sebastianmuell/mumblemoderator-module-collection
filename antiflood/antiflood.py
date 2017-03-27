@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 #
 # Copyright (C) 2011 Stefan Hacker <dd0t@users.sourceforge.net>
-# Copyright (C) 2012 - 2016 Natenom <natenom@googlemail.com>
+# Copyright (C) 2012 - 2017 Natenom <natenom@googlemail.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -46,18 +46,18 @@ class antiflood(MumoModule):
                                 ('servers', commaSeperatedIntegers, []),
                                 ),
                                 lambda x: re.match('(all)|(server_\d+)', x):(
-            	                ('maxactions', int, 10),
-            					('timeframe', int, 20),
+                                ('maxactions', int, 10),
+                                ('timeframe', int, 20),
                                 ('random_kick_threshold', int, 9),
                                 ('randomize', commaSeperatedBool, [True]),
-            					('probability_to_act_before_limit', int, 90),
-            					('number_of_actions_until_act_before_limit', int, 90),
-                    	        ('excluded_from_antiflood', str, 'excludedfromantiflood'),
+                                ('probability_to_act_before_limit', int, 90),
+                                ('number_of_actions_until_act_before_limit', int, 90),
+                                ('excluded_from_antiflood', str, 'excludedfromantiflood'),
                                 ('kickmessage', str, 'Please do not spam :)'),
                                 ('kickmessagerandomize', str, 'Oh, did I miscount?'),
-                     			('defaultroombeforekick', int, 1),
-            					('warnmessage', str, 'WARNING: Spam control system is active; you reached %d of %d actions within %d seconds.')
-                    )
+                                ('defaultroombeforekick', int, 1),
+                                ('warnmessage', str, 'WARNING: Spam control system is active; you reached %d of %d actions within %d seconds.')
+                        )
                     }
 
     def __init__(self, name, manager, configuration = None):
@@ -82,21 +82,21 @@ class antiflood(MumoModule):
     #--- Server callback functions
     #
     def userTextMessage(self, server, user, message, current=None):
-	self.handleSpam(server, server.getState(user.session))
+        self.handleSpam(server, server.getState(user.session))
 
     def userConnected(self, server, state, context = None): pass
     def userDisconnected(self, server, state, context = None):
-	sid = server.id()
+        sid = server.id()
 
-	users_timestamps = self.data[sid][0]
+        users_timestamps = self.data[sid][0]
         users_counts = self.data[sid][1]
 
-	try:
+        try:
             if state.session in users_timestamps:
-                    log = self.log()
-                    del users_timestamps[state.session]
-                    del users_counts[state.session]
-                    log.debug("Removed session %s from antiflood control system." % state.session)
+                log = self.log()
+                del users_timestamps[state.session]
+                del users_counts[state.session]
+                log.debug("Removed session %s from antiflood control system." % state.session)
         except KeyError:
             log.debug("Removed session %s from antiflood control system." % state.session)
 
@@ -124,11 +124,11 @@ class antiflood(MumoModule):
 
             sid = server.id()
             if sid not in self.data: #Create new object for this server
-                    count = {} #Count of actions
-                    ts = {} #Timestamp of last command
-                    self.data[sid] = [] #New list for sid
-                    self.data[sid].append(ts) #Accessible through self.data[sid][0]
-                    self.data[sid].append(count) #Accessible through self.data[sid][1]
+                count = {} #Count of actions
+                ts = {} #Timestamp of last command
+                self.data[sid] = [] #New list for sid
+                self.data[sid].append(ts) #Accessible through self.data[sid][0]
+                self.data[sid].append(count) #Accessible through self.data[sid][1]
 
             users_timestamps = self.data[sid][0]
             users_counts = self.data[sid][1]
@@ -136,7 +136,7 @@ class antiflood(MumoModule):
             #log.debug(users_timestamps)
 
             if state.session in users_counts:
-                    log.debug("Recorded actions for session %s: %s" % (state.session, users_counts[state.session]))
+                log.debug("Recorded actions for session %s: %s" % (state.session, users_counts[state.session]))
 
             timenow = time.time()
 
@@ -147,27 +147,27 @@ class antiflood(MumoModule):
                     random_kick = 0
 
                     if users_counts[state.session] >= int(scfg.maxactions/2) and users_counts[state.session] <= scfg.maxactions:
-                            try:
-                                    server.sendMessage(state.session, scfg.warnmessage % (users_counts[state.session], scfg.maxactions, scfg.timeframe))
-                            except:
-                                    log.debug("Warning: Invalid session exception for session %s. User probably already disconnected." % state.session)
+                        try:
+                            server.sendMessage(state.session, scfg.warnmessage % (users_counts[state.session], scfg.maxactions, scfg.timeframe))
+                        except:
+                            log.debug("Warning: Invalid session exception for session %s. User probably already disconnected." % state.session)
 
-                            if scfg.randomize:
-                                random_kick = randint(1,10)
-                                log.debug("Randomkick int for session %i is %i. random_kick_threshold is %i." % (state.session, random_kick, scfg.random_kick_threshold))
+                        if scfg.randomize:
+                            random_kick = randint(1,10)
+                            log.debug("Randomkick int for session %i is %i. random_kick_threshold is %i." % (state.session, random_kick, scfg.random_kick_threshold))
 
                     if (users_counts[state.session] > scfg.maxactions) or (random_kick >= scfg.random_kick_threshold):
-                            try:
-                                    if scfg.defaultroombeforekick == 1:
-                                            state.channel = int(server.getConf("defaultchannel"))
-                                            server.setState(state)
+                        try:
+                            if scfg.defaultroombeforekick == 1:
+                                    state.channel = int(server.getConf("defaultchannel"))
+                                    server.setState(state)
 
-                                    if random_kick >= scfg.random_kick_threshold:
-                                        server.kickUser(state.session, scfg.kickmessagerandomize)
-                                    else:
-                                        server.kickUser(state.session, scfg.kickmessage)
-                            except:
-                                    log.debug("Warning: Invalid session exception for session %s. User probably already disconnected." % state.session)
+                            if random_kick >= scfg.random_kick_threshold:
+                                server.kickUser(state.session, scfg.kickmessagerandomize)
+                            else:
+                                server.kickUser(state.session, scfg.kickmessage)
+                        except:
+                            log.debug("Warning: Invalid session exception for session %s. User probably already disconnected." % state.session)
                 else:
                     users_counts[state.session] = 1
                     users_timestamps[state.session] = timenow

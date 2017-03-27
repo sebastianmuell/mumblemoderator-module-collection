@@ -31,39 +31,39 @@
 
 from mumo_module import (commaSeperatedIntegers,
                          commaSeperatedStrings,
-			 commaSeperatedBool,
-			 MumoModule)
+                         commaSeperatedBool,
+                         MumoModule)
 import re
 import Murmur
 from hashlib import sha1
 
 class registerusers(MumoModule):
     default_config = {'registerusers':(
-				('servers', commaSeperatedIntegers, []),
-				),
-				lambda x: re.match('(all)|(server_\d+)', x):(
-				('canregister', commaSeperatedStrings, ["admin", "moderator"]),
-				('msg_success', str, "<font style='color:green;font-weight:bold;'>User was registered. Though he needs to reconnect now."),
-				('msg_error', str, "<font style='color:red;font-weight:bold;'>Something did not work, tell your admin :)</font>"),
-				('msg_no_certifcate', str, "<font style='color:red;font-weight:bold;'>Cannot register the user because he does not provide a certificate.</font>"),
-				('msg_already_registered', str, "<font style='color:red;font-weight:bold;'>This user is already registered, idiot :)</font>"),
-				('contextmenu_text', str, "Register this user on our Server")
-				)
-		    }
+                        ('servers', commaSeperatedIntegers, []),
+                        ),
+                        lambda x: re.match('(all)|(server_\d+)', x):(
+                        ('canregister', commaSeperatedStrings, ["admin", "moderator"]),
+                        ('msg_success', str, "<font style='color:green;font-weight:bold;'>User was registered. Though he needs to reconnect now."),
+                        ('msg_error', str, "<font style='color:red;font-weight:bold;'>Something did not work, tell your admin :)</font>"),
+                        ('msg_no_certifcate', str, "<font style='color:red;font-weight:bold;'>Cannot register the user because he does not provide a certificate.</font>"),
+                        ('msg_already_registered', str, "<font style='color:red;font-weight:bold;'>This user is already registered, idiot :)</font>"),
+                        ('contextmenu_text', str, "Register this user on our Server")
+                        )
+                    }
 
     def __init__(self, name, manager, configuration = None):
-	MumoModule.__init__(self, name, manager, configuration)
-	self.murmur = manager.getMurmurModule()
-	self.action_register_user = manager.getUniqueAction()
+        MumoModule.__init__(self, name, manager, configuration)
+        self.murmur = manager.getMurmurModule()
+        self.action_register_user = manager.getUniqueAction()
 
     def connected(self):
-	manager = self.manager()
-	log = self.log()
-	log.debug("Register for Server callbacks")
+        manager = self.manager()
+        log = self.log()
+        log.debug("Register for Server callbacks")
 
-	servers = self.cfg().registerusers.servers
-	if not servers:
-	    servers = manager.SERVERS_ALL
+        servers = self.cfg().registerusers.servers
+        if not servers:
+            servers = manager.SERVERS_ALL
 
         manager.subscribeServerCallbacks(self, servers)
 
@@ -75,9 +75,9 @@ class registerusers(MumoModule):
 
     def __on_register_user(self, server, action, user, target):
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         assert action == self.action_register_user
 
@@ -96,12 +96,12 @@ class registerusers(MumoModule):
     def userTextMessage(self, server, user, message, current=None): pass
 
     def userConnected(self, server, user, context = None):
-	try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
-	log = self.log()
+        log = self.log()
         manager = self.manager()
         bHasPermission = False
 

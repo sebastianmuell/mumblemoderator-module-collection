@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 
 # Copyright (C) 2010-2011 Stefan Hacker <dd0t@users.sourceforge.net>
-# Copyright (C) 2015 Natenom <natenom@googlemail.com>
+# Copyright (C) 2015 – 2017 Natenom <natenom@googlemail.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ class ossuffixes(MumoModule):
     default_config = {'ossuffixes':(
                                 ('servers', commaSeperatedIntegers, []),
                                 ),
-                                lambda x: re.match('(all)|(server_\d+)', x):(                                
+                                lambda x: re.match('(all)|(server_\d+)', x):(
                                 ('suffix_x11', str, " ☢"),
                                 ('suffix_windows', str, " ❖"),
                                 ('suffix_ios', str, " ☎"),

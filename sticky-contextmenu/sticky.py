@@ -2,7 +2,7 @@
 # -*- coding: utf-8
 
 # Copyright (C) 2011 Stefan Hacker <dd0t@users.sourceforge.net>
-# Copyright (C) 2015 Natenom <natenom@googlemail.com>
+# Copyright (C) 2015 – 2017 Natenom <natenom@googlemail.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,53 +34,53 @@
 
 from mumo_module import (commaSeperatedIntegers,
                          commaSeperatedStrings,
-			 commaSeperatedBool,
-			 MumoModule)
+                         commaSeperatedBool,
+                         MumoModule)
 import re
 
 class sticky(MumoModule):
     default_config = {'sticky':(
-				('servers', commaSeperatedIntegers, []),
-				),
-				lambda x: re.match('(all)|(server_\d+)', x):(
-				('canstick', commaSeperatedStrings, ["admin", "moderator"]),
-				('sticky_group', str, 'stickygroup'),
-				('sticky_channel', int, 0),
-				('msg_usergotstick_pm', str, 'You were sticked by %s.'),
-				('msg_stillsticky_pm', str, "<font style='color:red;font-weight:bold;'>You are still sticked.</font>"),
-				('msg_usergotstick_global', str, "<font style='color:red;font-weight:bold;'>User %s was sticked by %s.</font>"),
-				('msg_usergotunsticked_global', str, "<font style='color:red;font-weight:bold;'>User %s was unsticked by %s.</font>"),
-				('msg_cant_stick_self', str, "<font style='color:red;font-weight:bold;'>You can't stick yourself.</font>"),
-				('msg_pm_got_sticky', str, "<font style='color:red;font-weight:bold;'>%s sticked you.</font>"),
-				('msg_cant_stick_while_sticky', str, "<font style='color:red;font-weight:bold;'>While sticked you can't stick another user.</font>"),
-				('msg_user_already_sticky', str, "<font style='color:red;font-weight:bold;'>User %s is already sticked.</font>"),
-				('msg_cant_stick_unregistered', str, "<font style='color:red;font-weight:bold;'>You can't stick an unregistered user</font>")
-				)
-		    }
+                                ('servers', commaSeperatedIntegers, []),
+                                ),
+                                lambda x: re.match('(all)|(server_\d+)', x):(
+                                ('canstick', commaSeperatedStrings, ["admin", "moderator"]),
+                                ('sticky_group', str, 'stickygroup'),
+                                ('sticky_channel', int, 0),
+                                ('msg_usergotstick_pm', str, 'You were sticked by %s.'),
+                                ('msg_stillsticky_pm', str, "<font style='color:red;font-weight:bold;'>You are still sticked.</font>"),
+                                ('msg_usergotstick_global', str, "<font style='color:red;font-weight:bold;'>User %s was sticked by %s.</font>"),
+                                ('msg_usergotunsticked_global', str, "<font style='color:red;font-weight:bold;'>User %s was unsticked by %s.</font>"),
+                                ('msg_cant_stick_self', str, "<font style='color:red;font-weight:bold;'>You can't stick yourself.</font>"),
+                                ('msg_pm_got_sticky', str, "<font style='color:red;font-weight:bold;'>%s sticked you.</font>"),
+                                ('msg_cant_stick_while_sticky', str, "<font style='color:red;font-weight:bold;'>While sticked you can't stick another user.<font>"),
+                                ('msg_user_already_sticky', str, "<font style='color:red;font-weight:bold;'>User %s is already sticked.</font>"),
+                                ('msg_cant_stick_unregistered', str, "<font style='color:red;font-weight:bold;'>You can't stick an unregistered user</font>")
+                                )
+                    }
 
     def __init__(self, name, manager, configuration = None):
-	MumoModule.__init__(self, name, manager, configuration)
-	self.murmur = manager.getMurmurModule()
-	
-	self.action_stick_user = manager.getUniqueAction()
+        MumoModule.__init__(self, name, manager, configuration)
+        self.murmur = manager.getMurmurModule()
+
+        self.action_stick_user = manager.getUniqueAction()
         self.action_unstick_user = manager.getUniqueAction()
         self.action_list_sticked = manager.getUniqueAction()
-	
-	self.sticky_users={}
+
+        self.sticky_users={}
 
     def connected(self):
-	manager = self.manager()
-	log = self.log()
-	log.debug("Register for Server callbacks")
+        manager = self.manager()
+        log = self.log()
+        log.debug("Register for Server callbacks")
 
-	servers = self.cfg().sticky.servers
-	if not servers:
-	    servers = manager.SERVERS_ALL
+        servers = self.cfg().sticky.servers
+        if not servers:
+            servers = manager.SERVERS_ALL
 
-	manager.subscribeServerCallbacks(self, servers)
-	
+        manager.subscribeServerCallbacks(self, servers)
+
         # Craft the array for all virtual servers. Should also work for server later started servers.
-	meta = manager.getMeta()
+        meta = manager.getMeta()
         servers = meta.getAllServers()
 
         for virtualserver in servers:
@@ -95,9 +95,9 @@ class sticky(MumoModule):
 
     def __on_list_sticked(self, server, action, user, target):
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         assert action == self.action_list_sticked
 
@@ -118,9 +118,9 @@ class sticky(MumoModule):
 
     def __on_stick_user(self, server, action, user, target):
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         assert action == self.action_stick_user
 
@@ -146,12 +146,12 @@ class sticky(MumoModule):
 
     def __on_unstick_user(self, server, action, user, target):
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         assert action == self.action_unstick_user
-        
+
         log = self.log()
 
         if (target.session == user.session): #The bad guy can't remove his own ST status :P.
@@ -168,21 +168,21 @@ class sticky(MumoModule):
     def userTextMessage(self, server, user, message, current=None): pass
 
     def userConnected(self, server, user, context = None):
-	try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
-	log = self.log()
+        log = self.log()
         manager = self.manager()
         bHasPermission = False
 
         if (user.userid in self.sticky_users[server.id()]):
-	    log.debug("User %s is in sticky_group, moving him to sticky_channel and adding him to sticky_group." % (user.name))
-	    server.addUserToGroup(0, user.session, scfg.sticky_group) #Add user to server group.
-	    user.channel=scfg.sticky_channel
-	    server.setState(user) #Move him to ST channel
-	    server.sendMessage(user.session, scfg.msg_stillsticky_pm)
+            log.debug("User %s is in sticky_group, moving him to sticky_channel and adding him to sticky_group." % (user.name))
+            server.addUserToGroup(0, user.session, scfg.sticky_group) #Add user to server group.
+            user.channel=scfg.sticky_channel
+            server.setState(user) #Move him to ST channel
+            server.sendMessage(user.session, scfg.msg_stillsticky_pm)
         else:
             # Check whether user has permission to stick users and add context menu entries.
             ACL=server.getACL(0)
@@ -201,7 +201,7 @@ class sticky(MumoModule):
                         self.__on_stick_user, # Callback called when user uses the entry
                         self.murmur.ContextUser # We only want to show this entry on users
                 )
-                
+
                 manager.addContextMenuEntry(
                         server, # Server of user
                         user, # User which should receive the new entry
@@ -210,7 +210,7 @@ class sticky(MumoModule):
                         self.__on_unstick_user, # Callback called when user uses the entry
                         self.murmur.ContextUser # We only want to show this entry on users
                 )
-                
+
                 manager.addContextMenuEntry(
                         server, # Server of user
                         user, # User which should receive the new entry
@@ -219,20 +219,20 @@ class sticky(MumoModule):
                         self.__on_list_sticked, # Callback called when user uses the entry
                         self.murmur.ContextServer # We only want to show this entry on users
                 )
-            
+
             else:
                 return
 
     def userDisconnected(self, server, state, context = None): pass
     def userStateChanged(self, server, state, context = None):
-	try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
-	if (state.userid in self.sticky_users[server.id()]) and (state.channel != scfg.sticky_channel):
-	    state.channel = scfg.sticky_channel
-	    server.setState(state)
+        if (state.userid in self.sticky_users[server.id()]) and (state.channel != scfg.sticky_channel):
+            state.channel = scfg.sticky_channel
+            server.setState(state)
 
     def channelCreated(self, server, state, context = None): pass
     def channelRemoved(self, server, state, context = None): pass

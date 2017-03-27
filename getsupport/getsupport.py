@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8
 
-# Copyright (C) 2015 Natenom <natenom@googlemail.com>
+# Copyright (C) 2015 – 2017 Natenom <natenom@googlemail.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,64 +30,64 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from mumo_module import (commaSeperatedIntegers,
-			 commaSeperatedBool,
-			 commaSeperatedStrings,
-			 MumoModule)
+                         commaSeperatedBool,
+                         commaSeperatedStrings,
+                         MumoModule)
 import re
 import string
 
 class getsupport(MumoModule):
     default_config = {'getsupport':(
-				('servers', commaSeperatedIntegers, []),
-				),
-				lambda x: re.match('(all)|(server_\d+)', x):(
-				('supportgroup', str, 'supporter'),
-				('supportmessage_max_length', int, 160),
-				('cmds_create_request', commaSeperatedStrings, 'request, support, helpme'),
-				('cmds_list_requests', commaSeperatedStrings, 'requests, listrequests'),
-				('cmds_deleterequest', commaSeperatedStrings, 'deleterequest, removerequest'),
-				('controlcharacter', str, '!'),
-				('cmd_print_help', str, 'help'),
-				('msg_confirmation', str, 'The following request has been sent:<br />%s<br /><br />Please wait...<br />'),
-				('msg_nosupportmessage', str, "<span style='color:red;'>You need to add a request message in order to create a request :), try again...</span>"),
-				('msg_request_already_ongoing', str, 'here is already an ongoing request for you, please be patient and to not spam.'),
-				('msg_print_request_template', str, '<br /><span style="color:red;">Support request from %s:</span><br />Subject: %s</span>'),
-				('notify_about_unregistered_users', commaSeperatedBool, [True]),
-				('msg_print_unregisteredusernotification_template', str, '<br /><span style="color:red;">A new unregistered user named %s joined the server.<br />You got this messsage because you are a member of the supporter group.</span>')
-				)
-		    }
+                                     ('servers', commaSeperatedIntegers, []),
+                                   ),
+                                lambda x: re.match('(all)|(server_\d+)', x):(
+                                    ('supportgroup', str, 'supporter'),
+                                    ('supportmessage_max_length', int, 160),
+                                    ('cmds_create_request', commaSeperatedStrings, 'request, support, helpme'),
+                                    ('cmds_list_requests', commaSeperatedStrings, 'requests, listrequests'),
+                                    ('cmds_deleterequest', commaSeperatedStrings, 'deleterequest, removerequest'),
+                                    ('controlcharacter', str, '!'),
+                                    ('cmd_print_help', str, 'help'),
+                                    ('msg_confirmation', str, 'The following request has been sent:<br />%s<br /><br />Please wait...<br />'),
+                                    ('msg_nosupportmessage', str, "<span style='color:red;'>You need to add a request message in order to create a request :), try again...</span>"),
+                                    ('msg_request_already_ongoing', str, 'here is already an ongoing request for you, please be patient and to not spam.'),
+                                    ('msg_print_request_template', str, '<br /><span style="color:red;">Support request from %s:</span><br />Subject: %s</span>'),
+                                    ('notify_about_unregistered_users', commaSeperatedBool, [True]),
+                                    ('msg_print_unregisteredusernotification_template', str, '<br /><span style="color:red;">A new unregistered user named %s joined the server.<br />You got this messsage because you are a member of the supporter group.</span>')
+                                )
+                    }
 
     def __init__(self, name, manager, configuration = None):
-	MumoModule.__init__(self, name, manager, configuration)
-	self.murmur = manager.getMurmurModule()
-	self.ongoingrequests = {}
+        MumoModule.__init__(self, name, manager, configuration)
+        self.murmur = manager.getMurmurModule()
+        self.ongoingrequests = {}
 
     def isSupporter(self, userid, server):
-	""" Check if a user is member of the supporter group in the root channel. """
+        """ Check if a user is member of the supporter group in the root channel. """
 
-	try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
-	ACL=server.getACL(0) #Get root acl.
-	for group in ACL[1]:
-	    if (group.name == scfg.supportgroup):
-	    	if userid in group.members:
-	    	    return True
-	    	else:
-	    	    return False
+        ACL=server.getACL(0) #Get root acl.
+        for group in ACL[1]:
+            if (group.name == scfg.supportgroup):
+                if userid in group.members:
+                    return True
+                else:
+                    return False
 
     def connected(self):
-	manager = self.manager()
-	log = self.log()
-	log.debug("Register for Server callbacks")
+        manager = self.manager()
+        log = self.log()
+        log.debug("Register for Server callbacks")
 
-	servers = self.cfg().getsupport.servers
-	if not servers:
-	    servers = manager.SERVERS_ALL
+        servers = self.cfg().getsupport.servers
+        if not servers:
+            servers = manager.SERVERS_ALL
 
-	manager.subscribeServerCallbacks(self, servers)
+        manager.subscribeServerCallbacks(self, servers)
 
     def disconnected(self): pass
 
@@ -103,23 +103,23 @@ class getsupport(MumoModule):
                 break
 
     def parseMessage(self, msg, server, user):
-	"""
-	    We get something like "!request bla blu bli" or "!requests" and want to get the following parts out of it:
-	    command = "request"
-	    arguments = "bla blu bli"
+        """
+            We get something like "!request bla blu bli" or "!requests" and want to get the following parts out of it:
+            command = "request"
+            arguments = "bla blu bli"
 
-	    or
+            or
 
-	    command = "requests"
-	    arguments = None
+            command = "requests"
+            arguments = None
 
-	    If the message does not start with the controlcharacter both return values are None.
-	"""
+            If the message does not start with the controlcharacter both return values are None.
+        """
 
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         log = self.log()
 
@@ -136,9 +136,9 @@ class getsupport(MumoModule):
                 allow = string.letters + string.digits + ' ,.'
                 arguments=re.sub('[^%s]' % allow, '', arguments)
 
-		if command in scfg.cmds_create_request: #Apply maximum length for support message.
-			if len(arguments) > scfg.supportmessage_max_length:
-			    arguments = arguments[:scfg.supportmessage_max_length]
+                if command in scfg.cmds_create_request: #Apply maximum length for support message.
+                        if len(arguments) > scfg.supportmessage_max_length:
+                            arguments = arguments[:scfg.supportmessage_max_length]
 
             log.debug("msg: %s, command: %s, arguments: %s, user.session: %s" % (msg, command, arguments, user.session))
         else:
@@ -148,16 +148,16 @@ class getsupport(MumoModule):
         return command, arguments
 
     def userTextMessage(self, server, user, message, current=None):
-	try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
-	log = self.log()
+        log = self.log()
 
-	command, messagefromuser = self.parseMessage(message.text, server, user)
+        command, messagefromuser = self.parseMessage(message.text, server, user)
 
-	if command:
+        if command:
             if command == scfg.cmd_print_help:
                 server.sendMessage(user.session, "Commands for the getsupport module:<br /><ul>" \
                     + "<li>"+scfg.controlcharacter+"<b>help</b></li>" \
@@ -213,9 +213,9 @@ class getsupport(MumoModule):
 
     def userConnected(self, server, user, context = None):
         try:
-	    scfg = getattr(self.cfg(), 'server_%d' % server.id())
-	except AttributeError:
-	    scfg = self.cfg().all
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
 
         if scfg.notify_about_unregistered_users:
             if user.userid == -1:
@@ -232,7 +232,7 @@ class getsupport(MumoModule):
 
     def userDisconnected(self, server, state, context = None):
         if state.session in self.ongoingrequests:
-    	    del self.ongoingrequests[state.session]
+            del self.ongoingrequests[state.session]
 
     def userStateChanged(self, server, state, context = None): pass
     def channelCreated(self, server, state, context = None): pass
