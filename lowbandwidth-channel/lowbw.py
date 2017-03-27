@@ -45,7 +45,7 @@ class lowbw(MumoModule):
                                 ),
                                 lambda x: re.match('(all)|(server_\d+)', x):(
                                 ('lowbwchannelname', str, 'autocreated'),
-                                ('lowbwchanneldescription', str 'Description of low bandwidth channel'),
+                                ('lowbwchanneldescription', str, 'Description of low bandwidth channel'),
                                 ('botgroup', str, 'bots'),
                                 ('ignorechannels', commaSeperatedIntegers, [0]),
                                 ('lowbwmessage', str, "<span style='color:red;'>A low bandwidth channel was automatically created by the server because a bot entered this channel. If you want to save bandwidth or do not want to hear the bot at all consider to enter this new channel :)</style>")
