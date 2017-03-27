@@ -45,6 +45,7 @@ class lowbw(MumoModule):
                                 ),
                                 lambda x: re.match('(all)|(server_\d+)', x):(
                                 ('lowbwchannelname', str, 'autocreated'),
+                                ('lowbwchanneldescription', str 'Description of low bandwidth channel'),
                                 ('botgroup', str, 'bots'),
                                 ('ignorechannels', commaSeperatedIntegers, [0]),
                                 ('lowbwmessage', str, "<span style='color:red;'>A low bandwidth channel was automatically created by the server because a bot entered this channel. If you want to save bandwidth or do not want to hear the bot at all consider to enter this new channel :)</style>")
@@ -165,6 +166,7 @@ class lowbw(MumoModule):
 
         # Link newly created lowbwchannel.
         channelstate.links.append(newLowbwChannelID)
+        channelstate.description = scfg.lowbwchanneldescription
         server.setChannelState(channelstate)
         server.sendMessageChannel(state.channel, False, scfg.lowbwmessage)
         self.log().info("Lowbw channel (name: %s, id: %s) linked with current channel (id: %s)." % (scfg.lowbwchannelname, newLowbwChannelID, state.channel))
