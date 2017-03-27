@@ -44,6 +44,7 @@ from mumo_module import (commaSeperatedIntegers,
                          MumoModule)
 import pickle
 import re
+import Murmur
 
 class setstatus(MumoModule):
     default_config = {'setstatus':(
@@ -75,17 +76,9 @@ class setstatus(MumoModule):
 
     def disconnected(self): pass
 
-    def getUserOriginalName(self, server, username):
-        try:
-            scfg = getattr(self.cfg(), 'server_%d' % server.id())
-        except AttributeError:
-            scfg = self.cfg().all
-
-        pos = username.find(scfg.prefix)
-        if pos == -1:
-          return username
-        else:
-          return username[0:pos].strip()
+    def getUserOriginalName(self, server, user):
+        registration_record = server.getRegistration(user.userid)
+        return registration_record[Murmur.UserInfo.UserName]
 
     #--- Server callback functions
     #
@@ -101,12 +94,12 @@ class setstatus(MumoModule):
             if message.text.startswith(scfg.setstatus):
                 statuscode = message.text[len(scfg.setstatus):].strip()
                 userstate=server.getState(int(user.session))
-                userstate.name = "%s %s%s%s" % (self.getUserOriginalName(server, userstate.name), scfg.prefix, statuscode[:scfg.length], scfg.suffix)
+                userstate.name = "%s %s%s%s" % (self.getUserOriginalName(server, user), scfg.prefix, statuscode[:scfg.length], scfg.suffix)
                 server.setState(userstate)
 
             if message.text.startswith(scfg.delstatus):
                 userstate = server.getState(int(user.session))
-                userstate.name=self.getUserOriginalName(server, userstate.name)
+                userstate.name=self.getUserOriginalName(server, user)
                 server.setState(userstate)
 
     def userConnected(self, server, state, context = None): pass
