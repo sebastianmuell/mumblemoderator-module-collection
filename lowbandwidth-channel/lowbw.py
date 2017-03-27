@@ -162,11 +162,12 @@ class lowbw(MumoModule):
 
         # Create a low bw channel
         newLowbwChannelID = server.addChannel(scfg.lowbwchannelname, state.channel)
+
         self.log().info("Lowbw channel (name: %s, id: %s) created as a subchannel of %s" % (scfg.lowbwchannelname, newLowbwChannelID, state.channel))
 
         # Link newly created lowbwchannel.
         channelstate.links.append(newLowbwChannelID)
-        channelstate.description = scfg.lowbwchanneldescription
+
         server.setChannelState(channelstate)
         server.sendMessageChannel(state.channel, False, scfg.lowbwmessage)
         self.log().info("Lowbw channel (name: %s, id: %s) linked with current channel (id: %s)." % (scfg.lowbwchannelname, newLowbwChannelID, state.channel))
@@ -200,6 +201,10 @@ class lowbw(MumoModule):
                                group = scfg.botgroup,
                                deny = S)],
                            [], True)
+
+        lowbwchannel = server.getChannelState(newLowbwChannelID)
+        lowbwchannel.description = scfg.lowbwchanneldescription
+        server.setChannelState(lowbwchannel)
 
         # End of code from hacst, thanks much :)
 
