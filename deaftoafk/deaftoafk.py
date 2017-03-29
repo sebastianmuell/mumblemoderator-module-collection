@@ -159,10 +159,6 @@ class deaftoafk(MumoModule):
         except AttributeError:
             scfg = self.cfg().all
 
-
-        log = self.log()
-        log.debug("DEAFTOAFK DEBUG: %s" % (scfg.ignore_unregistered))
-
         if (self.isregistered(state.userid) == False) and (scfg.ignore_unregistered == [True]):
             return
 
