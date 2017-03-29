@@ -36,6 +36,7 @@
 #
 
 from mumo_module import (commaSeperatedIntegers,
+                         commaSeperatedBool,
                          MumoModule)
 import re
 
@@ -46,6 +47,7 @@ class deaftoafk(MumoModule):
                                 lambda x: re.match('(all)|(server_\d+)', x):(
                                 ('idlechannel', int, 0),
                                 ('excluded_for_afk', str, 'excludedafk'),
+                                ('ignore_unregistered', commaSeperatedBool, [False]),
                                 ('removed_channel_info', str, 'The channel you were in before afk was removed; you have been moved into the default channel.')
                                 )
                     }
@@ -96,6 +98,14 @@ class deaftoafk(MumoModule):
     def userTextMessage(self, server, user, message, current=None): pass
     def userConnected(self, server, state, context = None):
         try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
+
+        if not self.isregistered(state.userid) and scfg.ignore_unregistered:
+            return
+
+        try:
             scfg = getattr(self.cfg(), 'server_%d' % int(server.id()))
         except AttributeError:
             scfg = self.cfg().all
@@ -128,6 +138,14 @@ class deaftoafk(MumoModule):
 
     def userDisconnected(self, server, state, context = None):
         '''Only remove from afk list if not registered'''
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
+
+        if not self.isregistered(state.userid) and scfg.ignore_unregistered:
+            return
+
         sid = server.id()
 
         if not self.isregistered(state.userid):
@@ -145,6 +163,9 @@ class deaftoafk(MumoModule):
             scfg = getattr(self.cfg(), 'server_%d' % server.id())
         except AttributeError:
             scfg = self.cfg().all
+
+        if not self.isregistered(state.userid) and scfg.ignore_unregistered:
+            return
 
         if self.isexcluded(server, state.userid):
             return
@@ -248,6 +269,15 @@ class deaftoafk(MumoModule):
 
     def channelRemoved(self, server, state, context = None):
         '''Check if a user has been inside the removed channel; if so, replace saved channel_id into defaultchannel'''
+
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
+
+        if not self.isregistered(state.userid) and scfg.ignore_unregistered:
+            return
+
         sid = server.id()
 
         userdict_reg = self.data[sid][0]
@@ -256,23 +286,23 @@ class deaftoafk(MumoModule):
         removed_channel = state.id
         defaultchannel = int(server.getConf("defaultchannel"))
 
-    for k, v in userdict_reg.items():
-        if (removed_channel == v["channel"]):
-            userdict_reg[k]["channel"] = defaultchannel
-            #self.log().debug("Userid \"%s\" was in removed channel_id '%s'. Rewrite saved channel_id to defaultchannel" % (state.name, k))
+        for k, v in userdict_reg.items():
+            if (removed_channel == v["channel"]):
+                userdict_reg[k]["channel"] = defaultchannel
+                #self.log().debug("Userid \"%s\" was in removed channel_id '%s'. Rewrite saved channel_id to defaultchannel" % (state.name, k))
 
-            #set message for later
-            userdict_reg[k]["message"] = "chanremoved"
+                #set message for later
+                userdict_reg[k]["message"] = "chanremoved"
 
-    for k, v in userdict_unreg.items():
-        if (removed_channel == v["channel"]):
-            userdict_unreg[k]["channel"] = defaultchannel
-            #self.log().debug("Userid \"%s\" was in removed channel_id '%s'. Rewrite saved channel_id to defaultchannel" % (state.name, k))
+        for k, v in userdict_unreg.items():
+            if (removed_channel == v["channel"]):
+                userdict_unreg[k]["channel"] = defaultchannel
+                #self.log().debug("Userid \"%s\" was in removed channel_id '%s'. Rewrite saved channel_id to defaultchannel" % (state.name, k))
 
-            #set message for later
-            userdict_reg[k]["message"] = "chanremoved"
+                #set message for later
+                userdict_reg[k]["message"] = "chanremoved"
 
-    self.data[sid][0] = userdict_reg
-    self.data[sid][1] = userdict_unreg
+        self.data[sid][0] = userdict_reg
+        self.data[sid][1] = userdict_unreg
 
     def channelStateChanged(self, server, state, context = None): pass
