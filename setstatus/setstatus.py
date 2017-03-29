@@ -82,11 +82,11 @@ class setstatus(MumoModule):
         except AttributeError:
             scfg = self.cfg().all
 
-        pos = username.find(scfg.prefix)
+        pos = user.name.find(scfg.prefix)
         if pos == -1:
-          return username
+          return user.name
         else:
-          return username[0:pos].strip()
+          return user.name[0:pos].strip()
 
         # This method is better but would ignore temporary name changes of users made with another module.
         #registration_record = server.getRegistration(user.userid)
