@@ -98,17 +98,12 @@ class deaftoafk(MumoModule):
     def userTextMessage(self, server, user, message, current=None): pass
     def userConnected(self, server, state, context = None):
         try:
-            scfg = getattr(self.cfg(), 'server_%d' % server.id())
-        except AttributeError:
-            scfg = self.cfg().all
-
-        if not self.isregistered(state.userid) and scfg.ignore_unregistered:
-            return
-
-        try:
             scfg = getattr(self.cfg(), 'server_%d' % int(server.id()))
         except AttributeError:
             scfg = self.cfg().all
+
+        if (self.isregistered(state.userid) == False) and (scfg.ignore_unregistered == [True]):
+            return
 
         sid = server.id()
 
@@ -139,11 +134,11 @@ class deaftoafk(MumoModule):
     def userDisconnected(self, server, state, context = None):
         '''Only remove from afk list if not registered'''
         try:
-            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+            scfg = getattr(self.cfg(), 'server_%d' % int(server.id()))
         except AttributeError:
             scfg = self.cfg().all
 
-        if not self.isregistered(state.userid) and scfg.ignore_unregistered:
+        if (self.isregistered(state.userid) == False) and (scfg.ignore_unregistered == [True]):
             return
 
         sid = server.id()
@@ -160,11 +155,15 @@ class deaftoafk(MumoModule):
     def userStateChanged(self, server, state, context = None):
         """Move deafened users to afk channel"""
         try:
-            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+            scfg = getattr(self.cfg(), 'server_%d' % int(server.id()))
         except AttributeError:
             scfg = self.cfg().all
 
-        if not self.isregistered(state.userid) and scfg.ignore_unregistered:
+
+        log = self.log()
+        log.debug("DEAFTOAFK DEBUG: %s" % (scfg.ignore_unregistered))
+
+        if (self.isregistered(state.userid) == False) and (scfg.ignore_unregistered == [True]):
             return
 
         if self.isexcluded(server, state.userid):
@@ -271,11 +270,11 @@ class deaftoafk(MumoModule):
         '''Check if a user has been inside the removed channel; if so, replace saved channel_id into defaultchannel'''
 
         try:
-            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+            scfg = getattr(self.cfg(), 'server_%d' % int(server.id()))
         except AttributeError:
             scfg = self.cfg().all
 
-        if not self.isregistered(state.userid) and scfg.ignore_unregistered:
+        if (self.isregistered(state.userid) == False) and (scfg.ignore_unregistered == [True]):
             return
 
         sid = server.id()
