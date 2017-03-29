@@ -77,8 +77,20 @@ class setstatus(MumoModule):
     def disconnected(self): pass
 
     def getUserOriginalName(self, server, user):
-        registration_record = server.getRegistration(user.userid)
-        return registration_record[Murmur.UserInfo.UserName]
+        try:
+            scfg = getattr(self.cfg(), 'server_%d' % server.id())
+        except AttributeError:
+            scfg = self.cfg().all
+
+        pos = username.find(scfg.prefix)
+        if pos == -1:
+          return username
+        else:
+          return username[0:pos].strip()
+
+        # This method is better but would ignore temporary name changes of users made with another module.
+        #registration_record = server.getRegistration(user.userid)
+        #return registration_record[Murmur.UserInfo.UserName]
 
     #--- Server callback functions
     #
