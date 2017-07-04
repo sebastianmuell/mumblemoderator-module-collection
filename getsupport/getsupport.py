@@ -219,16 +219,20 @@ class getsupport(MumoModule):
 
         if scfg.notify_about_unregistered_users:
             if user.userid == -1:
-                ACL=server.getACL(0) #Get root acl to get list of supporters
-                for group in ACL[1]:
-                    if (group.name == scfg.supportgroup):
-                        supporter = group.members
-                        break
+                state = server.getState(user.session)
+                if state.release.startswith("mumble-ruby"): #ignore mumble-ruby-pluginbots
+                    return
+                else:
+                    ACL=server.getACL(0) #Get root acl to get list of supporters
+                    for group in ACL[1]:
+                        if (group.name == scfg.supportgroup):
+                            supporter = group.members
+                            break
 
-                onlineusers=server.getUsers()
-                for currentuser in onlineusers:
-                    if onlineusers[currentuser].userid in supporter:
-                        server.sendMessage(onlineusers[currentuser].session, scfg.msg_print_unregisteredusernotification_template % (user.name))
+                    onlineusers=server.getUsers()
+                    for currentuser in onlineusers:
+                        if onlineusers[currentuser].userid in supporter:
+                            server.sendMessage(onlineusers[currentuser].session, scfg.msg_print_unregisteredusernotification_template % (user.name))
 
     def userDisconnected(self, server, state, context = None):
         if state.session in self.ongoingrequests:
