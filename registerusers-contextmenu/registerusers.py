@@ -107,6 +107,11 @@ class registerusers(MumoModule):
         manager = self.manager()
         bHasPermission = False
 
+        # Check whether user has permission to use Murmurs "register user" permission.
+        # If so, do not add an additional ability to register users as the original one should be preferred.
+        if server.hasPermission(user.session, 0, 0x40000):
+            return
+
         # Check whether user has permission to register users and add context menu entries.
         ACL=server.getACL(0)
         for group in ACL[1]:
