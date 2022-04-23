@@ -34,10 +34,9 @@
 # forwarder.py
 # Forwards messages to all linked channels.
 #
-
-from mumo_module import (commaSeperatedIntegers,
-                         commaSeperatedBool,
-                         MumoModule)
+from config import (commaSeperatedIntegers,
+                         commaSeperatedBool)
+from mumo_module import (MumoModule)
 import re
 
 class forwarder(MumoModule):
